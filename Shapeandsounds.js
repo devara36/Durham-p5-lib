@@ -1,32 +1,12 @@
 
 
-# Sounds and cubes
-
-  - Cubes and sound is a program that draws objects if the user clicks on the screen. If the microphone is enbaled, the objects will be enlarged if there is a lound noise. There are multiple functionalities that are available that can be looked up in the 'examples' section. 
-The original code can be found [here](https://www.openprocessing.org/sketch/569405)
-
-# Tutorial
-- click on the canvas to draw a shape
-- to change a shape click the dimension of the shape and click the shape name
-- press freeze to freeze
-- press fall to make the objects fall
-- before pressing freeze or fall press resume first
-- use the sliders and the 'set colour' button to change the colour
-- press reset canvas to reset the entire canvas
-- pressing enable 2d click will disable drawing any kind of shape
-- to manipulate the perspective of the camera press SHIFT while moving the mouse to go left, right, up or down. press CTRL and move the mouse up or down to zoom in or out.
-
-
-Shape:
-```sh
 class Shape
-```
-The class that is used to create an object that will control the behaviour of the shapes and contain the necessary variables to do so.
-
-Constructor:
-```sh
- constructor()
+{
+    //constructor for the class
+    //this sets the variables that are needed to draw shapes on the canvas
+    constructor()
     {
+        
         this.s=1;
         this.choices = "Circles";
         this.cubes = [];
@@ -37,31 +17,24 @@ Constructor:
         this.mic = new p5.AudioIn();
         this.mic.start();
         this.vol = this.mic.getLevel()
-        this.width = w;
-        this.height = h;
+        
         colorMode(HSB,255);
         var canvas = createCanvas(1000,600,WEBGL);
         canvas.parent('sketch');
     }
-```
-The class that is used to create an object that will control the behaviour of the shapes and contain the necessary variables to do so.
-
-resetcanvas:
-```sh
-resetcanvas()
+    
+    //resets the canvas
+   resetcanvas()
     {
         //arrays that hold the shape objects, such as cubes spheres and ellipses
         this.cubes = [];
         this.spheres = [];
         this.ellipses = [];
         
+        
     }
-```
-This function will set the arrays that contain the objects into an empty array. Takes no arguments.
-
-setshape:
-```sh
-setshape(x)
+    //sets the shape that will be drawn when the mouse is clicked
+    setshape(x)
     {
         //resets the canvas before drawing
         resetcanvas();
@@ -71,46 +44,23 @@ setshape(x)
         //sets the shape
         this.choices = x;
     }
-```
-Sets the shape of the object that is to be drawn on the canvas. This is done by changing the field inside the Shape class
-
-enable 2D:
-```sh
- enable2D(x)
+    //enables interaction with the 2D objects
+    enable2D(x)
     {
         //sets the variable to whatever x is
         this.enable2Dclick = x;
         
     }
-    Changes the value of a field inside the class that would enable interaction with the 2D
-```
-Fields:
-```sh
-x
-```
-True or false
-
- object.
-
-change D:
-```sh
-changeD(x)
+    //changes the dimension of the shape
+    changeD(x)
     {
         //sets the variable to whatever x is
         this.D = x;
         //resets the canvas
-        Shape.resetcanvas();
+        resetcanvas();
     }
-```
-Fields:
-```sh
-x
-```
-Dimension of the shape
-
-setcolour:
-```sh
-setcolour(hue, saturation, brightness)
+    //sets the colour of the shape
+    setcolour(hue, saturation, brightness)
     {
         //checks the value of 'choices'
         switch(this.choices)
@@ -145,18 +95,9 @@ setcolour(hue, saturation, brightness)
             }
         }
     }
-```
-A function that will set the colour for all the shapes displayed on the canvas. The function will check the shape that is displayed (by using the switch statement) and will change the colours accordingly. The switch statement will check the value of 'this.choices' and will apply the colour for each object within an array
-
-Fields:
-- hue: hue of the colour
-- saturation: saturation of the colour
-- brightness: brightness of the colour
-- this.choices: shape of the objects on the canvas
-
-freeze:
-```sh
-freeze(x)
+    //freezes all the objects on the screen
+    
+    freeze(x)
     {
         
         //checks the value of 'choices'
@@ -193,15 +134,8 @@ freeze(x)
             }
         }
     }
-```
-A function that freezes all objects on the canvas by changing the values of the variables involved in translating the objects.
-Fields:
-- x: True or false
-If false, then freeze. If true, then resume.
-
-Fall:
-```sh
-fall()
+    //makes the objects on the canvas fall
+    fall()
     {
 
         //check the value of 'choices'
@@ -235,11 +169,12 @@ fall()
                 //calls the fall function for every cube
                 ThreeD.fall(true,this.cubes[i]);
             }
-        }
-```
-draw:
-```sh
-draw(g)
+        } 
+    }
+
+    //the draw function that is called many times per second
+    //this functions updates the status of the objects and checks for events
+    draw(g)
     {
         //changes the value of variables that are used to change the camera perspective
         let cameraX = map(mouseX,0,width,-1000,1000);
@@ -255,6 +190,9 @@ draw(g)
             texture(g);
             box(400);
         }
+        
+        
+        
         //this.s = map(this.vol,0,0.5,1,3);
 
         //for each item in 'cubes', update the status of the objects
@@ -327,28 +265,34 @@ draw(g)
             for(let i = 0; i < this.ellipses.length; i++)
         {
             
+            //calculates distance of cursor to circle
+            let d = dist(mouseX-500,mouseY-300,this.x,this.y);
+		
+		
+		    //erases the clicked circle
+		    if(d < this.ellipses[i].size/2)
+		    {
+			    this.ellipses[i].c = color(0,0,0);
+			    this.ellipses[i].selected = true;
+			
+			
+		    }
             
-            //this.ellipses[i].erase();
-            this.ellipses[i] = this.ellipses.filter(x => x !== this);
+            //this.ellipses[i] = this.ellipses.filter(x => x !== this);
         }
         }
         
         
     }
-```
-The draw function updates the status of the objects on the canvas, and it also checks for events.  'cameraX' and 'cameraY' are variables that are used to change the camera perspective. The camera perspective can be changed by pressing 'SHIFT' to move the camera around at a certain depth and by pressing 'CTRL' to zoom in and out. The position of the cursor on the canvas determines the camera perspective. Scrool up/down while pressing 'CTRL' to zoom in and out. Move the mouse around the canvas while pressing 'SHIFT' to move the camera perspective. The 'mouseIsPressed' value is used to add objects (shapes) to the arrays. 
-
-Fields:
-- this.choices: shape selected
-
-TwoD:
-```sh
+    
+    
+} 
+}
 class TwoD
-```
-The class that serves as the parent class of the 'Circle' class.
-constructor:
-```sh
- constructor()
+{
+    //constructor of the class
+    //this sets the variables used to draw 2D shapes
+    constructor()
     {
         //position
         this.x = mouseX-width/2;
@@ -356,7 +300,6 @@ constructor:
         //speed
         this.dx = random(-5,5);
         this.dy = random(-5,5);
-        //speed
         this.dxx = this.dx;
         this.dyy = this.dy;
         //colour
@@ -366,12 +309,7 @@ constructor:
 	    this.selected = true;
 
     }
-```
-contains the fields that will be used to draw and manage the 2D objects
-
-Getters and setters:
-```sh
-get x()
+    /*get x()
     {
         return this.x;
     }
@@ -442,11 +380,10 @@ get x()
     set selected(selected)
     {
         this.selected = selected;
-    }
-```
-Freeze:
-```sh
-//freezes the 2D object
+    }*/
+    
+
+    //freezes the 2D object
     freeze(x)
     {
         //changes speed to zero
@@ -464,15 +401,8 @@ Freeze:
         
 
     }
-```
-Freezes the 2D object by setting the speed to zero. This can also be used to resume to object by setting the speed to the previous value.
-
-Fields:
-- x: if true, then freeze object. If false, then resume object movement
-
-fall:
-```sh
-fall(x)
+    //makes the 2D objects fall
+    fall(x)
     {
         //sets horizontal velocity to zero and vertical velocity to its absolute value
         if(x == true)
@@ -487,20 +417,11 @@ fall(x)
             this.dy = this.dyy;
         }
     }
-```
-Makes the 2D object move vertically.
+    
 
-Fields:
-- x: If x is true, then object will fall. If x is false, then object will move normally again.
-
-ThreeD:
-```sh
+}
 class ThreeD
-```
-A class that becomes the parent class of 3D objects.
-
-Constructor:
-```sh
+{
     //constructor of the class
     //this contains the variables used to draw 3D shapes
     constructor()
@@ -529,12 +450,8 @@ Constructor:
         this.fall = false;
 
     }
-```
-The constructor takes no argument and is used to define the variables needed to create and manage the behaviour of 3D objects, such as cubes and spheres.
-
-Getters and setters:
-```sh
-    get x()
+    
+    /*get x()
     {
         return this.x;
     }
@@ -693,11 +610,10 @@ Getters and setters:
     set fall(fall)
     {
         this.fall = fall;
-    }
-```
-Freeze:
-```sh
-freeze()
+    }*/
+
+    //freezes the 3D objects
+    freeze()
     {
         
         //freezes the objects
@@ -720,15 +636,7 @@ freeze()
 			this.dz = this.dzz
 		}
     }
-```
-Freezes the 3D object by changing the value of its speed and rotation.
-
-Fields:
-- this.move: If false, then the object will be frozen in place. Otherwise, it will continue its initial movement
-
-fall:
-```sh
-//makes the objects fall
+    //makes the objects fall
     static fall(x,obj)
     { 
         
@@ -750,21 +658,11 @@ fall:
 			obj.dz = obj.dzz
 		}
     }
-```
-Makes the 3D objects fall by changing their velocities.
-Fields:
-- x: If true, then make objects fall. Otherwise, object will move normally again.
-- obj: The object affected is the object passed as the parameter
+}
 
-Circle:
-```sh
-class Circle
-```
-A class that will be used to create circle objects
-
-update:
-```sh
- //updates the status of the objects (moves the object)
+class Circle extends TwoD
+{
+    //updates the status of the objects (moves the object)
     update(s,g)
     {
         //changes the direction
@@ -794,18 +692,12 @@ update:
             //draws the ellipses
             ellipse(this.x,this.y,this.size*s,this.size*s);
         }
+		
+	  	
 		pop()
     }
-```
-Updates the status of the circles (moving the circles). If the parameter g is a createGraphics object, then the circles will be drawn on a cube surface. Otherwise, it is drawn on a regular canvas.
-
-Fields:
-- s: a size that is determined by the volume surrounding the mic
-- g: a createGraphics object that is used so that the circles can be drawn on a cube.
-
-boundary:
-```sh
-//bounds the circles so that it can't go outside of the canvas
+    
+    //bounds the circles so that it can't go outside of the canvas
     boundary()
 	{
         //condition for boundary
@@ -816,13 +708,10 @@ boundary:
 			this.dy = -this.dy;
 		}
     }
-```
-The boundary function doesn't let the circle objects to go beyond the canvas. Therefore, it will stay within it. The circles will bounce back instead with the same speed.
-
-Freeze:
-```sh
-freeze()
+    freeze()
     {
+        
+        
         //freezes the objects
         if(this.move == false)
 		{
@@ -830,26 +719,24 @@ freeze()
 		this.dx = 0
 		this.dy = 0
 		
+		
+
         }
         //sets the movement of the objects to its previous value
 		else
 		{
+            
 			this.dx = this.dxx
 			this.dy = this.dyy
+			
 		}
     }
-```
-Freezes the circle objects
+    
+}
 
-Cube:
-```sh
-class Cube
-```
-Creates a cube object. This class contains a function to draw cubes. This class inherits from ThreeD.
-
-update:
-```sh
-//updates the status of the cubes (moves the cubes)
+class Cube extends ThreeD
+{  
+    //updates the status of the cubes (moves the cubes)
     update(s)
     {
         //changes the direction
@@ -881,22 +768,11 @@ update:
             
     
     }
-```
-
-Updates the status of the cube (draws the cubes). If this.move is true, then the cubes will rotate. Othwerise, it weill not rotate.
-
-Fields:
-- s: A number that will increase in size as the sound surrounding the microphone increases
-
-Sphere:
-```sh
-class Sphere
-```
-A class that inherites from TwoD. This class will be used to create sphere objects on the canvas.
-
-update:
-```sh
- //updates the status of the spheres (moves the spheres)
+    
+}
+class Sphere extends ThreeD
+{
+    //updates the status of the spheres (moves the spheres)
     update(s)
     {
         //moves the spheres
@@ -912,11 +788,9 @@ update:
 	    sphere(this.size, 24, 16);
 		pop()
     }
-```
-Updates the sphere objects (moves the sphere around). 
+}
 
-Fields:
 
-- s: a number that varies in size depending on the volulme surrounding the microphone
+
 
 
